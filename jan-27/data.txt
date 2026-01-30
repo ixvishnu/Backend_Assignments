@@ -1,0 +1,6 @@
+Java                    is a high-level programming language.
+It is platform independent.
+It is   widely used.
+
+This is another     
+ paragraph.

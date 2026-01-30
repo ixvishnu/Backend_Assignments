@@ -11,7 +11,7 @@ public class Employee {
         this.monthlySalary = monthlySalary;
     }
 
-    double calculateAnnualSalary(y) {
+    double calculateAnnualSalary() {
         return monthlySalary * 12;
     }
 
