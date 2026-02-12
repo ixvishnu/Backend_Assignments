@@ -33,7 +33,7 @@ public class problem1 {
         String[] words = text.split(" ");
         int wordCount = words.length;
 
-        String[] sentences = text.split("[.!?]");
+        String[] sentences = text.split("(?<=[.!?]+)");
         int sentenceCount = sentences.length;
 
         Map<String, Integer> freqMap = new HashMap<>();
