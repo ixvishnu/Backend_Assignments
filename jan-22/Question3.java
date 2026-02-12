@@ -30,6 +30,9 @@ public class Question3 {
     }
     public static int findFactorial(int num){
         int ans = 1;
+        if(num < 0){
+            return -1;
+        }
         if(num == 0){
             return ans;
         }
