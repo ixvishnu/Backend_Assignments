@@ -101,6 +101,7 @@ CREATE TABLE Employees(
     FOREIGN KEY(dep_id) REFERENCES Department(dep_id),
     FOREIGN KEY(manager_id) REFERENCES Employees(emp_id)
 );
+
 Insert into Department values(101,'cse');
 Insert into Department values(102,'Ece');
 Insert into Department values(103,'IT');
@@ -131,13 +132,11 @@ JOIN order_items oi
 JOIN products p
     on oi.product_id = p.product_id;
 
-
 select e.emp_id, e.emp_name,d.dep_id,d.dep_name from Employees e join Department d
 on e.dep_id = d.dep_id;
 
 select e.emp_id, e.emp_name,d.dep_name,e.salary from Employees e join Department d
 on e.dep_id = d.dep_id where e.salary > 40000;
-
 
 select e.emp_id, e.emp_name,d.dep_name from Employees e join Department d
 on e.dep_id = d.dep_id where d.dep_name like 'E%';
@@ -180,185 +179,199 @@ SELECT d.dep_name, e.emp_name FROM Department d LEFT JOIN Employees e ON d.dep_i
 
 SELECT d.dep_name, e.emp_name FROM Department d LEFT JOIN Employees e ON d.dep_id = e.dep_id AND e.emp_name LIKE 'v%';
 
-SELECT *
-FROM orders o RIGHT JOIN customers c ON c.cust_id = o.cust_id
-WHERE o.ord_id IS NULL;
+--sup table
+create table suppliers (supplier_id int primary key, supplier_name varchar(50),
+contact_email varchar(50), phone bigint, country varchar(30));
 
-SELECT *
-FROM Employees e RIGHT JOIN Department d ON d.dep_id = e.dep_id;
+insert into suppliers values (1,'Google','google@gmail.com',9182938267,'India');
+insert into suppliers values (2,'Amazon','amazon@gmail.com',6281857512,'USA');
+insert into suppliers values (3,'Microsoft','microsoft@gmail.com',9345403336,'Canada');
 
-SELECT p.prod_name, COUNT(*)
-FROM products p RIGHT JOIN order_items oi ON p.product_id = oi.product_id
-GROUP BY p.prod_name;
+alter table products add supplier_id int;
+alter table products add constraint fk_supplier foreign key (supplier_id) references suppliers(supplier_id);
 
-SELECT *
-FROM customers c FULL OUTER JOIN orders o ON c.cust_id = o.cust_id;
+update products set supplier_id = 1 where product_id = 1001;
+update products set supplier_id = 1 where product_id = 1002;
+update products set supplier_id = 1 where product_id = 1003;
+update products set supplier_id = 2 where product_id = 1004;
+update products set supplier_id = 2 where product_id = 1005;
 
-SELECT *
-FROM customers c LEFT JOIN orders o ON c.cust_id = o.cust_id
-UNION
-SELECT *
-FROM customers c RIGHT JOIN orders o ON c.cust_id = o.cust_id;
 
-SELECT *
-FROM customers c INNER JOIN orders o ON c.cust_id = o.cust_id;
+-- TASK 3 : RIGHT JOIN
 
-SELECT *
-FROM customers c FULL OUTER JOIN orders o ON c.cust_id = o.cust_id
-WHERE o.ord_id IS NULL;
+select * from orders o right join customers c on o.cust_id = c.cust_id;
 
-SELECT *
-FROM Employees e FULL OUTER JOIN Department d ON e.dep_id = d.dep_id;
+select * from orders o right join customers c on o.cust_id = c.cust_id where o.ord_id is null;
 
-UPDATE Employees SET manager_id = 10001 WHERE manager_id IS NULL;
+select p.prod_name, count(oi.product_id) from products p right join order_items oi 
+on p.product_id = oi.product_id group by p.prod_name;
 
-INSERT INTO Employees VALUES (10005,'samar','samar@gmail.com',104,45080.00,10002);
+select * from employees e right join department d on e.dep_id = d.dep_id;
+select * from employees e right join department d on e.dep_id = d.dep_id where e.emp_id is null;
 
-SELECT e.emp_id,e.emp_name AS employee_name,m.emp_name AS manager_name
-FROM Employees e JOIN Employees m ON e.manager_id = m.emp_id;
 
-SELECT e.emp_id,m.emp_name AS manager_name
-FROM Employees e JOIN Employees m ON e.manager_id = m.emp_id
-ORDER BY e.manager_id;
+-- TASK 4 : FULL OUTER JOIN
 
-SELECT DISTINCT e.emp_name AS manager_name
-FROM Employees e JOIN Employees m ON e.emp_id = m.manager_id;
+select * from customers c full outer join orders o 
+on c.cust_id = o.cust_id;
 
-SELECT e.emp_name,m.emp_name
-FROM Employees e JOIN Employees m ON e.manager_id = m.emp_id;
+select * from customers c full outer join orders o 
+on c.cust_id = o.cust_id where o.ord_id is null;
 
-SELECT *
-FROM customers CROSS JOIN products;
+select * from customers c full outer join orders o 
+on c.cust_id = o.cust_id where c.cust_id is null;
 
-SELECT e1.emp_name AS employee1,e2.emp_name AS employee2
-FROM Employees e1 CROSS JOIN Employees e2
-WHERE e1.emp_id <> e2.emp_id;
+select * from employees e full outer join department d 
+on e.dep_id = d.dep_id;
 
-SELECT *
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-JOIN order_items oi ON o.ord_id = oi.ord_id;
+select * from customers c left join orders o on c.cust_id = o.cust_id 
+union 
+select * from customers c right join orders o on c.cust_id = o.cust_id;
 
-SELECT *
-FROM products p JOIN order_items oi ON p.product_id = oi.product_id
-JOIN Suppliers s ON s.supplier_id = p.supplier_id;
 
-SELECT *
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-JOIN order_items oi ON oi.ord_id = o.ord_id
-JOIN products p ON p.product_id = oi.product_id
-JOIN Suppliers s ON s.supplier_id = p.supplier_id;
+-- TASK 5 : SELF JOIN
 
-SELECT c.cust_id,COUNT(*)
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-GROUP BY c.cust_id;
+select e.emp_id, e.emp_name, m.emp_name from employees e join employees m 
+on e.manager_id = m.emp_id;
 
-SELECT c.cust_id,SUM(oi.quantity*p.prod_price)
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-JOIN order_items oi ON o.ord_id = oi.ord_id
-JOIN products p ON p.product_id = oi.product_id
-GROUP BY c.cust_id;
+select e1.emp_name, e2.emp_name from employees e1 join employees e2 
+on e1.manager_id = e2.manager_id where e1.emp_id <> e2.emp_id;
 
-SELECT d.dep_id,COUNT(e.emp_id)
-FROM Department d LEFT JOIN Employees e ON d.dep_id = e.dep_id
-GROUP BY d.dep_id;
+select distinct m.emp_name from employees e join employees m 
+on e.manager_id = m.emp_id;
 
-SELECT p.product_id,COUNT(oi.product_id)
-FROM products p LEFT JOIN order_items oi ON p.product_id = oi.product_id
-GROUP BY p.product_id;
+select e.emp_name, m.emp_name from employees e join employees m 
+on e.manager_id = m.emp_id;
 
-SELECT d.dep_id,SUM(e.salary)
-FROM Department d LEFT JOIN Employees e ON d.dep_id = e.dep_id
-GROUP BY d.dep_id;
+select e.emp_name, m.emp_name from employees e join employees m 
+on e.manager_id = m.emp_id;
 
-SELECT c.cust_id,COUNT(o.ord_id)
-FROM customers c LEFT JOIN orders o ON c.cust_id = o.cust_id
-GROUP BY c.cust_id
-HAVING COUNT(o.ord_id) > 1;
 
-SELECT d.dep_id,COUNT(e.emp_id)
-FROM Department d JOIN Employees e ON d.dep_id = e.dep_id
-GROUP BY d.dep_id
-HAVING COUNT(e.emp_id) > 1;
+-- TASK 6 : CROSS JOIN
 
-SELECT p.product_id,p.prod_name,COUNT(*) AS times_ordered
-FROM order_items oi JOIN products p ON oi.product_id = p.product_id
-GROUP BY p.product_id,p.prod_name
-HAVING COUNT(*) > 0;
+select * from customers cross join products;
 
-SELECT c.cust_id,SUM(p.prod_price*oi.quantity)
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-JOIN order_items oi ON o.ord_id = oi.ord_id
-JOIN products p ON p.product_id = oi.product_id
-GROUP BY c.cust_id
-HAVING SUM(p.prod_price*oi.quantity) > 10000;
+select e1.emp_name, e2.emp_name from employees e1 
+cross join 
+employees e2 where e1.emp_id <> e2.emp_id;
 
-SELECT c.city,COUNT(o.ord_id)
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-GROUP BY c.city;
+select d.dep_name, e.emp_name from department d 
+cross join employees e;
 
-SELECT c.cust_id,c.cust_name,c.email,o.date_ordered,o.ord_id
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-WHERE o.date_ordered > '2016-09-12';
 
-SELECT e.emp_id,d.dep_id,e.emp_name
-FROM Employees e JOIN Department d ON e.dep_id = d.dep_id
-WHERE d.dep_name = 'cse';
+-- TASK 7 : MULTI TABLE JOINS
 
-SELECT c.cust_id,c.cust_name,c.city
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-WHERE c.city = 'warangal';
+select * from customers c join orders o 
+on c.cust_id = o.cust_id 
+join order_items oi on o.ord_id = oi.ord_id;
 
-SELECT p.product_id,p.prod_name,p.prod_price
-FROM orders o JOIN order_items oi ON o.ord_id = oi.ord_id
-JOIN products p ON oi.product_id = p.product_id
-WHERE p.prod_price > 15000;
+select * from orders o join order_items oi 
+on o.ord_id = oi.ord_id join products p 
+on oi.product_id = p.product_id join suppliers s 
+on p.supplier_id = s.supplier_id;
 
-SELECT c.cust_name,c.cust_id
-FROM customers c JOIN orders o ON c.cust_id = o.cust_id
-WHERE c.cust_name LIKE 'p%';
+select e.emp_name, d.dep_name from employees e join department d 
+on e.dep_id = d.dep_id;
 
-SELECT e.emp_name
-FROM Employees e JOIN Department d ON e.dep_id = d.dep_id
-WHERE e.emp_name LIKE 'P%';
+select c.cust_name, o.ord_id, p.prod_name, oi.quantity from customers c join orders o 
+on c.cust_id = o.cust_id join order_items oi 
+on o.ord_id = oi.ord_id join products p 
+on oi.product_id = p.product_id;
 
-SELECT p.product_id,p.prod_name,oi.quantity
-FROM products p JOIN order_items oi ON p.product_id = oi.product_id
-JOIN orders o ON o.ord_id = oi.ord_id
-WHERE p.prod_name LIKE '%phone%';
+select c.cust_name, o.ord_id, oi.quantity, p.prod_name, p.prod_price from customers c 
+join orders o on c.cust_id = o.cust_id 
+join order_items oi on o.ord_id = oi.ord_id 
+join products p on oi.product_id = p.product_id;
 
-SELECT cust_id
-FROM customers
-WHERE cust_id IN (SELECT cust_id FROM orders);
 
-SELECT cust_id
-FROM customers
-WHERE cust_id NOT IN (SELECT cust_id FROM orders);
+-- TASK 8 : JOIN + GROUP BY
 
-SELECT product_id
-FROM products
-WHERE product_id NOT IN (SELECT product_id FROM order_items);
+select c.cust_id, count(o.ord_id) from customers c join orders o 
+on c.cust_id = o.cust_id group by c.cust_id;
 
-SELECT e.emp_id
-FROM Employees e
-WHERE e.salary > (
-    SELECT AVG(e1.salary)
-    FROM Employees e1
-    WHERE e1.dep_id = e.dep_id
-);
+select c.cust_id, sum(oi.quantity * p.prod_price) from customers c 
+join orders o on c.cust_id = o.cust_id 
+join order_items oi on o.ord_id = oi.ord_id 
+join products p on oi.product_id = p.product_id group by c.cust_id;
 
-SELECT dep_id,dep_name
-FROM Department
-WHERE dep_id IN (SELECT dep_id FROM Employees);
+select d.dep_id, count(e.emp_id) from department d 
+left join employees e on d.dep_id = e.dep_id group by d.dep_id;
 
-SELECT c.cust_id,c.cust_name
-FROM customers c
-WHERE EXISTS (
-    SELECT 1
-    FROM orders o
-    WHERE o.cust_id = c.cust_id
-);
+select p.prod_name, count(oi.product_id) from products p 
+join order_items oi on p.product_id = oi.product_id group by p.prod_name;
 
-SELECT e.emp_id,e.emp_name,d.dep_name,
-CASE WHEN e.salary >= 5000 THEN 'High salary' ELSE 'Low salary' END AS salaryrange
-FROM Employees e JOIN Department d ON e.dep_id = d.dep_id;
+select d.dep_name, sum(e.salary) from department d 
+join employees e on d.dep_id = e.dep_id group by d.dep_name;
 
+
+-- TASK 9 : JOIN + HAVING
+
+select c.cust_id, count(o.ord_id) from customers c 
+join orders o on c.cust_id = o.cust_id group by c.cust_id having count(o.ord_id) > 3;
+
+select d.dep_id, count(e.emp_id) from department d join 
+employees e on d.dep_id = e.dep_id group by d.dep_id having count(e.emp_id) > 5;
+
+select p.prod_name, sum(oi.quantity) from products p 
+join order_items oi on p.product_id = oi.product_id group by p.prod_name having sum(oi.quantity) > 10;
+
+select c.cust_id, sum(oi.quantity * p.prod_price) from customers c 
+join orders o on c.cust_id = o.cust_id 
+join order_items oi on o.ord_id = oi.ord_id 
+join products p on oi.product_id = p.product_id 
+group by c.cust_id having sum(oi.quantity * p.prod_price) > 50000;
+
+
+-- TASK 10 : JOIN + WHERE
+
+select c.cust_name, o.ord_id, o.date_ordered from customers c 
+join orders o on c.cust_id = o.cust_id where o.date_ordered > '2016-09-12';
+
+select e.emp_name, d.dep_name from employees e 
+join department d on e.dep_id = d.dep_id where d.dep_name = 'IT';
+
+select c.cust_name, c.city, o.ord_id from customers c 
+join orders o on c.cust_id = o.cust_id where c.city = 'Hyderabad';
+
+select p.prod_name, p.prod_price from products p 
+join order_items oi on p.product_id = oi.product_id where p.prod_price > 30000;
+
+
+-- TASK 11 : SUBQUERIES
+
+select cust_id, cust_name from customers 
+where cust_id in (select cust_id from orders);
+
+select cust_id, cust_name from customers c 
+where not exists (select 1 from orders o where o.cust_id = c.cust_id);
+
+select product_id from products 
+where product_id not in (select product_id from order_items);
+
+select e.emp_id, e.emp_name from employees e 
+where e.salary > (select avg(e1.salary) from employees e1 where e1.dep_id = e.dep_id);
+
+select * from customers c join (select cust_id from orders) t on c.cust_id = t.cust_id;
+
+select * 
+from (select ord_id, sum(quantity) as total_qty from order_items group by ord_id) t 
+where t.total_qty > 5;
+
+
+-- TASK 12 Multi select joins
+
+select e.emp_name, 
+case 
+	when e.salary >= 50000 then 'Very High'
+	when e.salary >= 10000 then 'Medium' 
+	else 'Low' 
+	end from employees e;
+
+select e.emp_name, e.salary, e.salary * 12 from employees e;
+
+select e.emp_name, d.dep_name, 
+	case
+	when e.salary > 20000 then 'Senior' 
+	else 'Junior' 
+	end 
+from employees e join department d on e.dep_id = d.dep_id;
