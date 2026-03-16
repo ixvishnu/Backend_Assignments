@@ -1,4 +1,4 @@
-
+use shop;
 CREATE TABLE customers (
     cust_id BIGINT PRIMARY KEY,
     cust_name VARCHAR(100) NOT NULL,
@@ -375,3 +375,11 @@ select e.emp_name, d.dep_name,
 	else 'Junior' 
 	end 
 from employees e join department d on e.dep_id = d.dep_id;
+
+select * from customers;
+select * from products;
+select * from orders;
+select * from order_items;
+select * from suppliers;
+
+
